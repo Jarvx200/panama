@@ -23,6 +23,8 @@ public class ConsumerManager {
 
     public void loadModules(Optional<String> archivePath){
 
+        messageBus.start();
+
         String scannablePackage = archivePath
                 .filter(s-> !s.trim().isEmpty())
                 .orElse("personal.jarvx.modules.plugins");
@@ -37,6 +39,8 @@ public class ConsumerManager {
                         ConsumerModuleAbstract moduleBase = pluginClass.getDeclaredConstructor(MessageBus.class).newInstance(messageBus);
                         ConsumerModuleThread consumerModuleThread = new ConsumerModuleThread(moduleBase);
                         consumerModuleThread.startModule();
+
+
                         consumers.put(UUID.randomUUID().toString(),consumerModuleThread);
                     } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
                              InvocationTargetException e){

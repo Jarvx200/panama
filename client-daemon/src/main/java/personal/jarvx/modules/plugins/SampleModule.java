@@ -2,8 +2,8 @@ package personal.jarvx.modules.plugins;
 
 import personal.jarvx.MessageBus;
 import personal.jarvx.modules.ConsumerModuleAbstract;
-
-import java.io.Console;
+import personal.jarvx.shared.model.Message;
+import personal.jarvx.shared.model.MessageUrgency;
 
 public class SampleModule extends ConsumerModuleAbstract{
     public SampleModule(MessageBus bus) {
@@ -12,7 +12,7 @@ public class SampleModule extends ConsumerModuleAbstract{
 
     @Override
     public void start() {
-        System.out.println("SampleModule started");
+        bus.push(new Message("Discord", "Hello world", MessageUrgency.MEDIUM));
     }
 
     @Override
