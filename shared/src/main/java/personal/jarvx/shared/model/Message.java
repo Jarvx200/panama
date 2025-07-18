@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
-public class Message {
+public class Message{
 
     /* PROTOCOL:
 
@@ -60,7 +60,7 @@ public class Message {
 
 
     // Might move logic to packetbuilder if the protocol will be extended
-    public byte[] serialize() throws IOException {
+    public final byte[] serialize() throws IOException {
         ByteArrayOutputStream vlenPacket = new ByteArrayOutputStream();
 
         for(String key : protocolMap.keySet()) {
@@ -70,5 +70,16 @@ public class Message {
 
         return vlenPacket.toByteArray();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+        Message m = (Message) o;
+        return this.content.equals(m.content);
+    }
+
+
 
 }

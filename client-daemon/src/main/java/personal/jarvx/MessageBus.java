@@ -6,13 +6,16 @@ import personal.jarvx.shared.model.MessageUrgency;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class MessageBus extends Thread{
 
-
+    private static final int RECONN_TIME = 1;
     private HashMap<MessageUrgency, Queue<Message>> urgencyQueues;
     private Timer popTimer;
+    private Thread serverConnectThread = null;
+
 
 
     private Socket serverSocket = null;
@@ -22,12 +25,24 @@ public class MessageBus extends Thread{
         popTimer = new Timer();
 
 
-        try{
-            serverSocket = new Socket(host, port);
-        } catch (Exception e){
-            System.err.println("Could not connect to server, all messages will be cached locally!");
-            //TODO: Thread to retry connection
-        }
+        serverConnectThread = new Thread(() -> {
+            while (serverSocket == null) {
+                try {
+                    sleep(RECONN_TIME * 1000);
+                    serverSocket = new Socket(host, port);
+                }
+                catch (IOException e){
+                    System.err.println("Could not connect to server, all messages will be cached locally!");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                ;
+
+            }
+       });
+
+        serverConnectThread.start();
+
         urgencyQueues = new HashMap<>();
 
         for (MessageUrgency urgency : MessageUrgency.values()) {
@@ -43,18 +58,32 @@ public class MessageBus extends Thread{
     }
 
     public void push(Message messageSuper){
-        urgencyQueues.get(messageSuper.getUrgency()).add(messageSuper);
+        Message lastMessage = urgencyQueues.get(messageSuper.getUrgency()).peek();
+        if(lastMessage != null){
+            if(!lastMessage.equals(messageSuper)){
+                urgencyQueues.get(messageSuper.getUrgency()).add(messageSuper);
+            }
+        } else {
+            urgencyQueues.get(messageSuper.getUrgency()).add(messageSuper);
+        }
     }
 
     public void serialPop(MessageUrgency urgency){
 
-        if(urgencyQueues.get(urgency).isEmpty()){
-            System.out.println("Sending " );
+        if(this.serverConnectThread.isAlive())
+            return;
+
+
+        if(urgencyQueues.get(urgency).isEmpty()) {
             return;
         }
-        Message toSend =  urgencyQueues.get(urgency).poll();
-        assert toSend != null;
 
+
+        Message toSend =  urgencyQueues.get(urgency).poll();
+
+        if(toSend == null){
+            return;
+        }
 
         try{
             byte[] messagePacket = toSend.serialize();
