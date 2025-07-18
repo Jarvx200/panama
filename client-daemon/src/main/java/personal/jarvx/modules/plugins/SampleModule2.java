@@ -5,14 +5,14 @@ import personal.jarvx.modules.ConsumerModuleAbstract;
 import personal.jarvx.shared.model.Message;
 import personal.jarvx.shared.model.MessageUrgency;
 
-public class SampleModule extends ConsumerModuleAbstract{
-    public SampleModule(MessageBus bus) {
+public class SampleModule2 extends ConsumerModuleAbstract{
+    public SampleModule2(MessageBus bus) {
         super(bus);
     }
 
     @Override
     public void start() {
-        bus.push(new Message("Discord", "Hello world", MessageUrgency.HIGH));
+        bus.push(new Message("CAT", "Hello world", MessageUrgency.HIGH));
     }
 
     @Override

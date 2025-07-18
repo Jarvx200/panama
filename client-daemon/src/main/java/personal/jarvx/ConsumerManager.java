@@ -17,7 +17,7 @@ public class ConsumerManager {
     private ConsumerManager(){
         consumers = new HashMap<>();
         this.messageBus = new MessageBus("127.0.0.1", 2910);
-        loadModules(Optional.ofNullable(""));
+        loadModules(Optional.of(""));
     };
 
 

@@ -1,6 +1,5 @@
 import org.junit.Test;
 import personal.jarvx.ConsumerManager;
-import personal.jarvx.modules.plugins.SampleModule;
 import personal.jarvx.shared.model.Message;
 import personal.jarvx.shared.model.MessageUrgency;
 
@@ -23,5 +22,12 @@ public class MessageTesting {
     @Test
     public void sendToSocket(){
         ConsumerManager consumerManager = ConsumerManager.getInstance();
+    }
+
+    @Test
+    public void desreialize() throws IOException {
+        Message message = Message.deserialize(":IP:127.0.0.1:URGENCY: :PRODUCER:CAT:CONTENT:Hello world".getBytes());
+
+        System.out.println(message.getProducer());
     }
 }

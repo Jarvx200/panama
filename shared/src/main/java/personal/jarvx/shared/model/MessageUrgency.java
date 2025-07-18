@@ -21,4 +21,13 @@ public enum MessageUrgency {
        return (byte) this.ordinal();
     }
 
+    public static MessageUrgency fromByte(byte priority) {
+        for (MessageUrgency urgency : MessageUrgency.values()) {
+            if (urgency.getPriorityByte() == priority) {
+                return urgency;
+            }
+        }
+        return null;
+    }
+
 }

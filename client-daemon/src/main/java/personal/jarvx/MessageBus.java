@@ -6,15 +6,13 @@ import personal.jarvx.shared.model.MessageUrgency;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
 
 public class MessageBus extends Thread{
 
-    private static final int RECONN_TIME = 1;
-    private HashMap<MessageUrgency, Queue<Message>> urgencyQueues;
-    private Timer popTimer;
-    private Thread serverConnectThread = null;
+    private static final int RECON_TIME = 1;
+    private final HashMap<MessageUrgency, Queue<Message>> urgencyQueues;
+    private final Thread serverConnectThread;
 
 
 
@@ -22,13 +20,13 @@ public class MessageBus extends Thread{
 
     public MessageBus(@Nonnull String host, int port) {
 
-        popTimer = new Timer();
+        Timer popTimer = new Timer();
 
 
         serverConnectThread = new Thread(() -> {
             while (serverSocket == null) {
                 try {
-                    sleep(RECONN_TIME * 1000);
+                    sleep(RECON_TIME * 1000);
                     serverSocket = new Socket(host, port);
                 }
                 catch (IOException e){
@@ -36,7 +34,7 @@ public class MessageBus extends Thread{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                ;
+
 
             }
        });
@@ -87,6 +85,7 @@ public class MessageBus extends Thread{
 
         try{
             byte[] messagePacket = toSend.serialize();
+
             serverSocket.getOutputStream().write(messagePacket);
 
         } catch (IOException e){
