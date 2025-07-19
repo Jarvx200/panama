@@ -1,5 +1,6 @@
 package personal.jarvx;
 
+import personal.jarvx.model.Notification;
 import personal.jarvx.shared.model.Message;
 
 import java.awt.*;
@@ -7,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -15,13 +17,13 @@ import java.util.Arrays;
 
 public class Client extends Thread {
     private final Socket clientSocket;
-    private final InetAddress ip;
+    private final Inet4Address ip;
 
 
 
     public Client(Socket clientSocket) {
         this.clientSocket = clientSocket;
-        this.ip = clientSocket.getInetAddress();
+        this.ip = null;
     }
 
     @Override
@@ -33,9 +35,8 @@ public class Client extends Thread {
         ) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] cmd = {"notify-send", "Hello!", Message.deserialize(line.getBytes()).getContent()};
-                Runtime.getRuntime().exec(cmd);
-
+                Notification notification = new Notification(ip, Message.deserialize(line.getBytes()));
+                notification.send();
             }
         } catch (IOException e) {
             System.err.println("Connection with client lost: " + e.getMessage());

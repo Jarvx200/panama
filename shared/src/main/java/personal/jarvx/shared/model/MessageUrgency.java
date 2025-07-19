@@ -1,20 +1,21 @@
 package personal.jarvx.shared.model;
 
+import java.util.HashMap;
+
 public enum MessageUrgency {
 
-    HIGH(1),
-    MEDIUM(10),
-    LOW(100),
-    NEUTRAL(1000);
+    HIGH(new NotifyData(1, "critical", 3000)),
+    MEDIUM(new NotifyData(2, "normal", 2000)),
+    LOW(new NotifyData(100, "low", 1000)),
+    NEUTRAL(new NotifyData(1000, "low", 1000));
 
-    private final Integer delay;
+    public record NotifyData (int delay, String urgency, int expireTime){}
 
-    MessageUrgency(Integer delay){
-        this.delay = delay * 1000;
-    }
 
-    public Integer getDelay() {
-        return delay;
+    public final NotifyData notifyData;
+
+    MessageUrgency(NotifyData notifyData){
+        this.notifyData = notifyData;
     }
 
     public byte getPriorityByte(){

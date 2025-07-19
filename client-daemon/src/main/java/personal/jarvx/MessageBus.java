@@ -51,7 +51,7 @@ public class MessageBus extends Thread{
                     serialPop(urgency);
                 }
             };
-            popTimer.schedule(popTask, 0, urgency.getDelay());
+            popTimer.schedule(popTask, 0, urgency.notifyData.delay());
         }
     }
 

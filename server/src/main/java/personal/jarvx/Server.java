@@ -8,14 +8,14 @@ import java.util.ArrayList;
 public class Server {
 
     private static Server instance = new Server();
-    private static ArrayList<Client> clients = new ArrayList<Client>();
+    private static final ArrayList<Client> clients = new ArrayList<Client>(); // static so the server can restart without losing the clients
 
     private final static int PORT = 2910;
     private ServerSocket serverSocket;
 
     private final Thread acceptClientsThread;
 
-    private volatile boolean running = true;
+    private static volatile boolean running = true;
 
 
     public void startListening(){
