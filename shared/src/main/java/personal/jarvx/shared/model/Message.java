@@ -133,9 +133,10 @@ public class Message{
         return vlenPacket.toByteArray();
     }
 
-    public static Message deserialize(byte[] buf) throws IOException {
+    public static Message deserialize(byte[] buf) {
         Builder builder = new Builder();
         String content = new String(buf, StandardCharsets.UTF_8);
+
 
 
 
@@ -145,13 +146,21 @@ public class Message{
         content = content.substring(1);
         for(String s  : content.split(":")) {
             if(kvp > 1){
-                protocolMap.get(String.format(":%s:", kv[0])).deserialize(builder, kv[1].getBytes(StandardCharsets.UTF_8));
+                try {
+                    protocolMap.get(String.format(":%s:", kv[0])).deserialize(builder, kv[1].getBytes(StandardCharsets.UTF_8));
+                } catch (IOException e) {
+                    System.err.println("Could not deserialize field: " + kv[0] + ":" + kv[1]);
+                }
                 kvp = 0;
             }
             kv[kvp++] = s;
         }
         if(kvp > 1){
-            protocolMap.get(String.format(":%s:", kv[0])).deserialize(builder, kv[1].getBytes(StandardCharsets.UTF_8));
+            try{
+                protocolMap.get(String.format(":%s:", kv[0])).deserialize(builder, kv[1].getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                System.err.println("Could not deserialize field: " + kv[0] + ":" + kv[1]);
+            }
         }
 
 
